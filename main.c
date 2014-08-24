@@ -48,6 +48,7 @@ int parse_options(int argc, char *argv[]) {
       case 'u':
         backup_mirrorlist();
         sort_speed();
+        break;
       default:
         break;
     } 
@@ -80,4 +81,6 @@ void sort_speed() {
 
 void show_version() {
   printf("pacmirror version %s\n", PACMIRROR_VERSION);
+  system("repo-elephant");
+  printf("  by blake bartenbach\n");
 }
