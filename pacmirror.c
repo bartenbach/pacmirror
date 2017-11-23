@@ -14,7 +14,7 @@
     #define PACMAN_MIRRORLIST    "/etc/pacman.d/mirrorlist"
 #endif
 
-#define PACMIRROR_VERSION        "0.0.2"
+#define PACMIRROR_VERSION        "0.0.3"
 
 #define RED                      "\033[0;31m"
 #define GREEN                    "\033[0;32m"
@@ -22,6 +22,7 @@
 /* function prototypes */
 static int parse_options(int, char*[]);
 static void backup_mirrorlist();
+static void check_reflector();
 static void sort_speed();
 static void show_version();
 static void show_help();
@@ -48,6 +49,7 @@ int parse_options(int argc, char *argv[]) {
         exit(0);
         break; 
       case 'u':
+        check_reflector();
         backup_mirrorlist();
         sort_speed();
         exit(0);
@@ -82,21 +84,23 @@ void show_help() {
   printf("  -h, --help              Show the help menu you are reading right now\n");
 }
 
-void sort_speed() {
+void check_reflector() {
   int ret = system("type reflector &> /dev/null");
   if (ret != 0) {
     printf("error: pacmirror requires that reflector be installed.\n");
     exit(1);
-  } else {
-    printf("Sorting new mirrors.....\n");
   }
-  ret = system("reflector --verbose -l 5 --sort rate --save /etc/pacman.d/mirrorlist &> /dev/null");
+}
+
+void sort_speed() {
+  printf("Sorting new mirrors.....\n");
+  int ret = system("reflector --verbose -l 5 --sort rate --save /etc/pacman.d/mirrorlist &> /dev/null");
   if (ret != 0) {
     printf("error: failed to sort mirrors with reflector\n");
     exit(1);
   } else {
-    printf("Mirrors updated successfully!\n");
     system("cat /etc/pacman.d/mirrorlist");
+    printf("Mirrors updated successfully!\n");
   }
 }
 
